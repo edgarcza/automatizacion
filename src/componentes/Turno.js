@@ -14,10 +14,10 @@ export class Turno extends React.Component {
 		scanned: false,
 		cargando: false,
 		sb_visible: false,
-		// hay_banco: false,
-		// banco: {}
-		hay_banco: true,
-		banco: {turno: 1}
+		hay_banco: false,
+		banco: {}
+		// hay_banco: true,
+		// banco: {turno: 1}
 	};
 
 	constructor(props) {
@@ -63,7 +63,7 @@ export class Turno extends React.Component {
 		
     return (
       <View style={styles.div}>
-				{!cargando && (<BarCodeScanner
+				{!cargando && !scanned && (<BarCodeScanner
 					onBarCodeScanned={scanned ? undefined : this.handleBarCodeScanned}
 					style={{height: '65%', width: '65%', borderWidth: 10, borderColor: this.props.theme.colors.primary}}
 				/>)}
@@ -79,7 +79,7 @@ export class Turno extends React.Component {
 				{cargando && (<ActivityIndicator animating={true} size={140}/>)}
         {scanned && (					
 					<Button style={{marginTop: 50}}
-						icon="refresh" mode="contained" onPress={() => this.setState({ scanned: false, cargando: false })}>
+						icon="refresh" mode="contained" onPress={() => this.setState({ scanned: false, cargando: false, hay_banco: false })}>
 						Escanear otra vez
 					</Button>
 				)}

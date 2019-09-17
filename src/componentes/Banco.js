@@ -16,6 +16,7 @@ export class Principal extends React.Component {
 	state = {
 		contrasena: '1',
 		clave: '1',
+		cargando: false,
 	};
 	
   render() {
@@ -39,7 +40,7 @@ export class Principal extends React.Component {
 					secureTextEntry={true}
 				/>
 				
-				<Button style={styles.input} mode="contained" onPress={() => this.Ingresar()}>
+				<Button style={styles.input} mode="contained" onPress={() => this.Ingresar()} disabled={this.state.cargando}>
 					Ingresar
 				</Button>
 				
@@ -48,13 +49,18 @@ export class Principal extends React.Component {
 	}
 	
 	Ingresar() {
+		this.setState({cargando: true});
 		if(this.state.clave !== "" && this.state.contrasena !== "") {
 			console.log("sda")
 			DB.collection("bancos").doc(this.state.clave).get().then((doc) => {
+				this.setState({cargando: false});
 				if(doc.exists && doc.data().contrasena === this.state.contrasena) {
 					console.log("sad");
 					this.props.navigation.navigate('BancoPrincipal', {banco: doc.data(), clave: this.state.clave});
 				}
+			}).catch((err) => {
+				alert("Error al iniciar sesión");
+				this.setState({cargando: false});
 			});
 		}
 	}
