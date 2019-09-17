@@ -4,8 +4,12 @@ import Turno from './Turno';
 import Banco from './Banco';
 
 export default class Principal extends React.Component {
+  static navigationOptions = {
+    headerTransparent: true,
+  };
+
   state = {
-    index: 0,
+    index: 1,
     routes: [
       { key: 'turno', title: 'Turno', icon: 'chevron-right' },
       { key: 'banco', title: 'Banco', icon: 'business' },

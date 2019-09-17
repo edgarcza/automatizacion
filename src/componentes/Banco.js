@@ -1,12 +1,21 @@
 import * as React from 'react';
 import { withTheme, TextInput, Menu, Button } from 'react-native-paper';
 import { View, Text, StyleSheet, Picker } from 'react-native';
+import { withNavigation } from 'react-navigation';
+import { DB } from '../Config'
+import QRCode from 'react-native-qrcode';
 
 export class Principal extends React.Component {
 
+  // constructor(props) {
+  //   super(props);
+	// 	// this.buttonPress = this.buttonPress.bind(this);
+	// 	console.log("a", props)
+  // }
+
 	state = {
-		contrasena: '',
-		clave: '',
+		contrasena: '1',
+		clave: '1',
 	};
 	
   render() {
@@ -30,12 +39,25 @@ export class Principal extends React.Component {
 					secureTextEntry={true}
 				/>
 				
-				<Button style={styles.input} mode="contained" onPress={() => console.log('Pressed')}>
+				<Button style={styles.input} mode="contained" onPress={() => this.Ingresar()}>
 					Ingresar
 				</Button>
+				
       </View>
     );
-  }
+	}
+	
+	Ingresar() {
+		if(this.state.clave !== "" && this.state.contrasena !== "") {
+			console.log("sda")
+			DB.collection("bancos").doc(this.state.clave).get().then((doc) => {
+				if(doc.exists && doc.data().contrasena === this.state.contrasena) {
+					console.log("sad");
+					this.props.navigation.navigate('BancoPrincipal', {banco: doc.data(), clave: this.state.clave});
+				}
+			});
+		}
+	}
 }
 
 const styles = StyleSheet.create({
@@ -50,4 +72,4 @@ const styles = StyleSheet.create({
 	}
 });
 
-export default withTheme(Principal);
+export default withNavigation(withTheme(Principal));

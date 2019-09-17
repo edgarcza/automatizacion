@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
-import { withTheme, Button, ActivityIndicator } from 'react-native-paper';
+import { withTheme, Button, ActivityIndicator, Snackbar } from 'react-native-paper';
 
 import { DB } from '../Config'
 
@@ -13,6 +13,11 @@ export class Turno extends React.Component {
 		hasCameraPermission: null,
 		scanned: false,
 		cargando: false,
+		sb_visible: false,
+		// hay_banco: false,
+		// banco: {}
+		hay_banco: true,
+		banco: {turno: 1}
 	};
 
 	constructor(props) {
@@ -39,7 +44,7 @@ export class Turno extends React.Component {
   };
 
   render() {
-		const { hasCameraPermission, scanned, cargando } = this.state;
+		const { hasCameraPermission, scanned, cargando, hay_banco, banco } = this.state;
 		
 		if (hasCameraPermission === null) {
       return (
@@ -62,6 +67,14 @@ export class Turno extends React.Component {
 					onBarCodeScanned={scanned ? undefined : this.handleBarCodeScanned}
 					style={{height: '65%', width: '65%', borderWidth: 10, borderColor: this.props.theme.colors.primary}}
 				/>)}
+				
+        {hay_banco && (					
+					<Text
+						style={{fontSize: 40, fontWeight: '500'}}
+					>
+						TURNO {banco.turno}
+					</Text>
+				)}
 
 				{cargando && (<ActivityIndicator animating={true} size={140}/>)}
         {scanned && (					
@@ -69,28 +82,45 @@ export class Turno extends React.Component {
 						icon="refresh" mode="contained" onPress={() => this.setState({ scanned: false, cargando: false })}>
 						Escanear otra vez
 					</Button>
-        )}
+				)}
+				
+        <Snackbar
+          visible={this.state.sb_visible}
+          onDismiss={() => this.setState({ sb_visible: false })}
+          duration={5000}
+          style={{backgroundColor: '#eb5f3f'}}
+        >
+          El banco está lleno
+        </Snackbar>
       </View>
     );
   }
 
   handleBarCodeScanned = ({ type, data }) => {
-    this.setState({ scanned: true, cargando: true });
-	// alert(`Bar code with type ${type} and data ${data} has been scanned!`);		
+    this.setState({ scanned: true, cargando: true });	
 		DB.collection("bancos").doc(data).get().then((doc) => {
 			// console.log(doc);
 			if(doc.exists) {
 				let banco = doc.data();
 				console.log(banco);
 				if(banco.dentro < banco.capacidad) {
+					this.setState({hay_banco: true, banco: banco});
 
+					DB.collection("bancos").doc(data).update({dentro: banco.dentro + 1, turno: banco.turno + 1})
+					.then((asd) => {
+						
+					});
+					
 				} 
 				else {
-					alert("El banco está lleno");
+					// alert("El banco está lleno");
+					this.setState({sb_visible: true})
 				}
 			}
+			this.setState({cargando: false})
 		}).catch(function(error) {
 			console.log("Error getting document:", error);
+			this.setState({cargando: false})
 		});
 	};
 	
