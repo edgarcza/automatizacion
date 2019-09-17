@@ -27,7 +27,7 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.equipo7.proyecto"
+      "package": "com.auto.auto"
     }
   }
 }
