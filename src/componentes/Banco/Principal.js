@@ -15,7 +15,7 @@ export class Principal extends React.Component {
 	}
 
   state = {
-    index: 1,
+    index: 0,
     routes: [
       { key: 'banco', title: 'QR', icon: 'code', banco: this.props.navigation.getParam('banco'), clave: this.props.navigation.getParam('clave') },
       { key: 'turno', title: 'Turno', icon: 'chevron-right', banco: this.props.navigation.getParam('banco'), clave: this.props.navigation.getParam('clave') },

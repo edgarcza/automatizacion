@@ -27,7 +27,7 @@ export class Turno extends React.Component {
       <View style={styles.div}>				
 				<View style={styles.datos}>
 					<Text style={styles.dato}>Capacidad actual: {this.state.banco.dentro} / {this.state.banco.capacidad}</Text>
-					<Text style={styles.dato}>Turno actual: {this.state.banco.turno}</Text>
+					<Text style={styles.dato}>Turno actual: {this.state.banco.turno - 1}</Text>
 				</View>
 
         <Button style={styles.input} mode="contained" onPress={() => this.Liberar()}>
@@ -55,7 +55,7 @@ export class Turno extends React.Component {
 		DB.collection("bancos").doc(clave).get()
 		.then((querySnapshot) => {
 			let doc = querySnapshot.data();
-			if(doc.dentro > 1) {
+			if(doc.dentro > 0) {
 				DB.collection("bancos").doc(clave).update({dentro: doc.dentro - 1})
 				.then((asd) => {
 					this.setState({sb_visible: true})
@@ -72,7 +72,7 @@ export class Turno extends React.Component {
 		DB.collection("bancos").doc(clave).get()
 		.then((querySnapshot) => {
 			let doc = querySnapshot.data();
-			DB.collection("bancos").doc(clave).update({turno: 0})
+			DB.collection("bancos").doc(clave).update({turno: 1})
 			.then((asd) => {
 				this.setState({sb_visible: true})
 			});

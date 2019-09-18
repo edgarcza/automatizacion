@@ -25,7 +25,7 @@ export default class QR extends React.Component {
 const styles = StyleSheet.create({
   div: {
     flex: 1,
-    // alignItems: 'center',
+    alignItems: 'center',
 		justifyContent: 'center',
 		padding: 20
 	},
