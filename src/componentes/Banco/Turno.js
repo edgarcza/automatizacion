@@ -45,7 +45,7 @@ export class Turno extends React.Component {
 
 				<View style={styles.datos}>
 					<Text style={styles.dato}>Capacidad actual: {this.state.banco.dentro} / {this.state.banco.capacidad}</Text>
-					<Text style={styles.dato}>Turno actual: {this.state.banco.turno - 1}</Text>
+					<Text style={styles.dato}>Turno actual: {this.state.banco.turno}</Text>
 				</View>
 
 				<Button style={styles.input} mode="contained" onPress={() => this.Pedir()}>
