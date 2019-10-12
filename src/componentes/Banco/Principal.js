@@ -3,6 +3,7 @@ import { BottomNavigation, Text } from 'react-native-paper';
 import { withNavigation } from 'react-navigation';
 import Turno from './Turno';
 import QR from './QR';
+import Pantalla from './Pantalla';
 
 export class Principal extends React.Component {
 	static navigationOptions = {
@@ -18,6 +19,7 @@ export class Principal extends React.Component {
     index: 1,
     routes: [
       { key: 'banco', title: 'QR', icon: 'code', banco: this.props.navigation.getParam('banco'), clave: this.props.navigation.getParam('clave') },
+      { key: 'pantalla', title: 'Pantalla', icon: 'fullscreen', banco: this.props.navigation.getParam('banco'), clave: this.props.navigation.getParam('clave') },
       { key: 'turno', title: 'Turno', icon: 'chevron-right', banco: this.props.navigation.getParam('banco'), clave: this.props.navigation.getParam('clave') },
     ],
   };
@@ -26,7 +28,8 @@ export class Principal extends React.Component {
 
   _renderScene = BottomNavigation.SceneMap({
     turno: Turno,
-    banco: QR
+    banco: QR,
+    pantalla: Pantalla,
   });
 
   render() {

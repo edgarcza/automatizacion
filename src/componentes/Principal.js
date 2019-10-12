@@ -9,7 +9,7 @@ export default class Principal extends React.Component {
   };
 
   state = {
-    index: 0,
+    index: 1,
     routes: [
       { key: 'turno', title: 'Turno', icon: 'chevron-right' },
       { key: 'banco', title: 'Banco', icon: 'business' },
