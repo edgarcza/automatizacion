@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableHighlight } from 'react-native';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
-import { withTheme, Button, ActivityIndicator, Snackbar } from 'react-native-paper';
+import { withTheme, Button, ActivityIndicator, Snackbar, Dialog, Portal, RadioButton } from 'react-native-paper';
 
 import { DB } from '../Config'
 
@@ -13,8 +13,11 @@ export class Turno extends React.Component {
 		hasCameraPermission: null,
 		scanned: false,
 		cargando: false,
+		dialogo: false,
 		sb_visible: false,
 		hay_banco: false,
+		codigo: null,
+		va_a: 1,
 		banco: {}
 		// hay_banco: true,
 		// banco: {turno: 1}
@@ -68,6 +71,8 @@ export class Turno extends React.Component {
 					style={{ height: '65%', width: '65%', borderWidth: 10, borderColor: this.props.theme.colors.primary }}
 				/>)}
 
+				{cargando && (<ActivityIndicator animating={true} size={140} />)}
+
 				{hay_banco && (
 					<Text
 						style={{ fontSize: 40, fontWeight: '500' }}
@@ -76,7 +81,38 @@ export class Turno extends React.Component {
 					</Text>
 				)}
 
-				{cargando && (<ActivityIndicator animating={true} size={140} />)}
+				<Portal>
+					<Dialog
+						visible={this.state.dialogo}
+						onDismiss={() => this.setState({ scanned: false, dialogo: false })}>
+						<Dialog.Title>Voy...</Dialog.Title>
+						<Dialog.Content>
+							<View>
+								<RadioButton.Group
+									onValueChange={value => this.setState({ va_a: value })}
+									value={this.state.va_a}
+								>
+									<TouchableHighlight onPress={() => { this.setState({ va_a: 1 }) }} underlayColor='#ededed'>
+										<View style={{ flexDirection: "row" }}>
+											<RadioButton color={this.props.theme.colors.primary} value={1} />
+											<Text style={{ paddingTop: 6, fontSize: 17, fontWeight: 'bold' }}>A caja</Text>
+										</View>
+									</TouchableHighlight>
+									<TouchableHighlight onPress={() => { this.setState({ va_a: 2 }) }} underlayColor='#ededed'>
+										<View style={{ flexDirection: "row" }}>
+											<RadioButton color={this.props.theme.colors.primary} value={2} />
+											<Text style={{ paddingTop: 6, fontSize: 17, fontWeight: 'bold' }}>Con ejecutivo</Text>
+										</View>
+									</TouchableHighlight>
+								</RadioButton.Group>
+							</View>
+						</Dialog.Content>
+						<Dialog.Actions>
+							<Button onPress={() => this.buscarBanco()}>PEDIR TURNO</Button>
+						</Dialog.Actions>
+					</Dialog>
+				</Portal>
+
 				{scanned && (
 					<Button style={{ marginTop: 50 }}
 						icon="refresh" mode="contained" onPress={() => this.setState({ scanned: false, cargando: false, hay_banco: false })}>
@@ -96,32 +132,57 @@ export class Turno extends React.Component {
 		);
 	}
 
-	handleBarCodeScanned = ({ type, data }) => {
-		this.setState({ scanned: true, cargando: true });
-		DB.collection("bancos").doc(data).get().then((doc) => {
-			// console.log(doc);
-			if (doc.exists) {
-				let banco = doc.data();
-				console.log(banco);
-				if (banco.dentro < banco.capacidad) {
-					this.setState({ hay_banco: true, banco: banco });
+	async buscarBanco() {
+		this.setState({ dialogo: false, cargando: true });
+		console.log(this.state.codigo);
 
-					DB.collection("bancos").doc(data).update({ dentro: banco.dentro + 1, turno: banco.turno + 1 })
-						.then((asd) => {
-
-						});
-
-				}
-				else {
-					// alert("El banco está lleno");
-					this.setState({ sb_visible: true })
+		try {
+			const Documento = await DB.collection("bancos").doc(this.state.codigo).get();
+			if(Documento.exists) {
+				if(Documento.data().dentro < Documento.data().capacidad) {
+					this.setState({banco: Documento.data()});
+					try {
+						const Update = await Documento.ref.update({dentro: Documento.data().dentro + 1, turno: Documento.data().turno + 1});
+						const UpTurno = await Documento.ref.collection('turnos').doc((Documento.data().turno + 1).toString()).set({tipo: this.state.va_a, turno: Documento.data().turno + 1})
+						console.log(Update);
+						this.setState({ cargando: false, hay_banco: true })
+					} catch(error) {
+						console.log(error)
+					}
 				}
 			}
-			this.setState({ cargando: false })
-		}).catch(function (error) {
-			console.log("Error getting document:", error);
-			this.setState({ cargando: false })
-		});
+		} catch(error) {
+			console.log(error)
+		}
+		
+	}
+
+	handleBarCodeScanned = ({ type, data }) => {
+		this.setState({ scanned: true, codigo: data, dialogo: true });
+		// 	DB.collection("bancos").doc(data).get().then((doc) => {
+		// 		// console.log(doc);
+		// 		if (doc.exists) {
+		// 			let banco = doc.data();
+		// 			console.log(banco);
+		// 			if (banco.dentro < banco.capacidad) {
+		// 				this.setState({ hay_banco: true, banco: banco });
+
+		// 				DB.collection("bancos").doc(data).update({ dentro: banco.dentro + 1, turno: banco.turno + 1 })
+		// 					.then((asd) => {
+
+		// 					});
+
+		// 			}
+		// 			else {
+		// 				// alert("El banco está lleno");
+		// 				this.setState({ sb_visible: true })
+		// 			}
+		// 		}
+		// 		this.setState({ cargando: false })
+		// 	}).catch(function (error) {
+		// 		console.log("Error getting document:", error);
+		// 		this.setState({ cargando: false })
+		// 	});
 	};
 
 }

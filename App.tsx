@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, YellowBox  } from 'react-native';
 import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import Principal from './src/componentes/Principal';
 import { createAppContainer, } from 'react-navigation';
@@ -24,6 +24,7 @@ const AppNavigator = createStackNavigator({
 const AppContainer = createAppContainer(AppNavigator);
 
 export default function App() {
+  YellowBox.ignoreWarnings(['Setting a timer']);
   return (
     <PaperProvider theme={theme}>
       {/* <Principal></Principal> */}

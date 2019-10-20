@@ -13,15 +13,15 @@ let app = Firebase.initializeApp(config);
 export const DB = Firebase.firestore();
 
 export var Lugares = [
-    'Elegir lugar',
-    'CAJA 1',
-    'CAJA 2',
-    'CAJA 3',
-    'CAJA 4',
-    'CAJA 5',
-    'CAJA 6',
-    'CAJA 7',
-    'CAJA 8',
-    'CAJA 9',
-    'CAJA 10',
+    'Elegir lugar...',
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    '10',
 ]

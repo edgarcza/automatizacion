@@ -20,8 +20,9 @@ export class Pantalla extends React.Component {
 			this.setState({banco: doc.data()});
 			console.log("Current data: ", doc.data());
 
-			if(this.state.banco.turno_lugar !== "") {
-				this.setState({turno_actual: `${this.state.banco.turno_numero} - ${this.state.banco.turno_lugar}`});
+			if(this.state.banco.turno_pantalla !== "") {
+				// this.setState({turno_actual: `${this.state.banco.turno_numero} - ${this.state.banco.turno_lugar}`});
+				this.setState({turno_actual: this.state.banco.turno_pantalla});
 			}
 			else {
 				this.setState({turno_actual: 'Sin turno'});
@@ -33,7 +34,7 @@ export class Pantalla extends React.Component {
     return (
       <View style={styles.div}>
 				<Text style={{fontSize: 20}}>Turno actual:</Text>
-				<Text style={{fontWeight: 'bold', fontSize: 35, textTransform: 'uppercase'}}>{this.state.turno_actual}</Text>
+				<Text style={{fontWeight: 'bold', fontSize: 35}}>{this.state.turno_actual}</Text>
       </View>
     );
 	}
